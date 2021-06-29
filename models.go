@@ -91,7 +91,9 @@ func NewVersion(p *PullRequest) Version {
 	}
 }
 
-// NewVersionEveryUpdate constructs a new VersionThatChangesOnEveryUpdate.
+// NewVersionEveryUpdate constructs a new Version that changes every time a PR is updated instead of just commits.
+// For example, will update if a label is added/removed
+// The actions that will cause an update are listed here: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#webhook-payload-object-33
 func NewVersionEveryUpdate(p *PullRequest) Version {
 	return Version{
 		PR:                  strconv.Itoa(p.Number),
