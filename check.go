@@ -121,7 +121,11 @@ Loop:
 				continue Loop
 			}
 		}
-		response = append(response, NewVersion(p))
+		newVersionFunc := NewVersion
+		if request.Source.NewVersionEveryUpdate {
+			newVersionFunc = NewVersionEveryUpdate
+		}
+		response = append(response, newVersionFunc(p))
 	}
 
 	// Sort the commits by date

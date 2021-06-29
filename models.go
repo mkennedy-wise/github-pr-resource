@@ -27,6 +27,7 @@ type Source struct {
 	RequiredReviewApprovals int                         `json:"required_review_approvals"`
 	Labels                  []string                    `json:"labels"`
 	States                  []githubv4.PullRequestState `json:"states"`
+	NewVersionEveryUpdate   bool                        `json:"new_version_every_update"`
 }
 
 // Validate the source configuration.
@@ -76,6 +77,7 @@ type Version struct {
 	CommittedDate       time.Time                 `json:"committed,omitempty"`
 	ApprovedReviewCount string                    `json:"approved_review_count"`
 	State               githubv4.PullRequestState `json:"state"`
+	UpdatedAt           *time.Time                `json:"updated_at,omitempty"`
 }
 
 // NewVersion constructs a new Version.
@@ -86,6 +88,18 @@ func NewVersion(p *PullRequest) Version {
 		CommittedDate:       p.UpdatedDate().Time,
 		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
 		State:               p.State,
+	}
+}
+
+// NewVersionEveryUpdate constructs a new VersionThatChangesOnEveryUpdate.
+func NewVersionEveryUpdate(p *PullRequest) Version {
+	return Version{
+		PR:                  strconv.Itoa(p.Number),
+		Commit:              p.Tip.OID,
+		CommittedDate:       p.UpdatedDate().Time,
+		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
+		State:               p.State,
+		UpdatedAt:           &p.UpdatedAt.Time,
 	}
 }
 
@@ -114,6 +128,7 @@ type PullRequestObject struct {
 	State             githubv4.PullRequestState
 	ClosedAt          githubv4.DateTime
 	MergedAt          githubv4.DateTime
+	UpdatedAt         githubv4.DateTime
 }
 
 // UpdatedDate returns the last time a PR was updated, either by commit

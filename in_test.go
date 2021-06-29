@@ -154,6 +154,26 @@ func TestGet(t *testing.T) {
 			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
 			filesString:    "README.md\nOther.md\n",
 		},
+		{
+			description: "get works with new version every update",
+			source: resource.Source{
+				Repository:            "itsdalmo/test-repository",
+				AccessToken:           "oauthtoken",
+				NewVersionEveryUpdate: true,
+			},
+			version: resource.Version{
+				PR:                  "pr1",
+				Commit:              "commit1",
+				CommittedDate:       time.Time{},
+				ApprovedReviewCount: "0",
+				State:               githubv4.PullRequestStateOpen,
+				UpdatedAt:           &time.Time{},
+			},
+			parameters:     resource.GetParameters{},
+			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN","updated_at":"0001-01-01T00:00:00Z"}`,
+			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+		},
 	}
 
 	for _, tc := range tests {
@@ -361,6 +381,7 @@ func createTestPR(
 			State:             state,
 			ClosedAt:          githubv4.DateTime{Time: time.Now()},
 			MergedAt:          githubv4.DateTime{Time: time.Now()},
+			UpdatedAt:         githubv4.DateTime{Time: time.Now()},
 		},
 		Tip: resource.CommitObject{
 			ID:            fmt.Sprintf("commit%s", n),
