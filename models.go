@@ -120,10 +120,13 @@ type PullRequestObject struct {
 }
 
 // ChangeTime returns the last time a PR was updated.
-// If track_non_commit_changes is true this will always be the updated_at time.
+// If track_non_commit_changes the time is the most recent of committed_date and updated_at.
 // Otherwise, time is either by commit or close/merge.
 func (p *PullRequest) ChangeTime() githubv4.DateTime {
 	if p.TrackNonCommitChanges {
+		if p.Tip.CommittedDate.Time.After(p.UpdatedAt.Time) {
+			return p.Tip.CommittedDate
+		}
 		return p.UpdatedAt
 	}
 
