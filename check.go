@@ -121,11 +121,7 @@ Loop:
 				continue Loop
 			}
 		}
-		newVersionFunc := NewVersion
-		if request.Source.NewVersionEveryUpdate {
-			newVersionFunc = NewVersionEveryUpdate
-		}
-		response = append(response, newVersionFunc(p))
+		response = append(response, NewVersion(p, request.Source.TrackNonCommitChanges))
 	}
 
 	// Sort the commits by date
@@ -211,6 +207,9 @@ func (r CheckResponse) Len() int {
 }
 
 func (r CheckResponse) Less(i, j int) bool {
+	if r[j].UpdatedAt != nil && r[i].UpdatedAt != nil {
+		return r[j].UpdatedAt.After(*r[i].UpdatedAt)
+	}
 	return r[j].CommittedDate.After(r[i].CommittedDate)
 }
 

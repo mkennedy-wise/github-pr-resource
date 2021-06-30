@@ -45,7 +45,7 @@ func TestCheck(t *testing.T) {
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -55,11 +55,11 @@ func TestCheck(t *testing.T) {
 				Repository:  "itsdalmo/test-repository",
 				AccessToken: "oauthtoken",
 			},
-			version:      resource.NewVersion(testPullRequests[1]),
+			version:      resource.NewVersion(testPullRequests[1], false),
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -69,12 +69,12 @@ func TestCheck(t *testing.T) {
 				Repository:  "itsdalmo/test-repository",
 				AccessToken: "oauthtoken",
 			},
-			version:      resource.NewVersion(testPullRequests[3]),
+			version:      resource.NewVersion(testPullRequests[3], false),
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[2]),
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[2], false),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -85,7 +85,7 @@ func TestCheck(t *testing.T) {
 				AccessToken: "oauthtoken",
 				Paths:       []string{"terraform/*/*.tf", "terraform/*/*/*.tf"},
 			},
-			version:      resource.NewVersion(testPullRequests[3]),
+			version:      resource.NewVersion(testPullRequests[3], false),
 			pullRequests: testPullRequests,
 			files: [][]string{
 				{"README.md", "travis.yml"},
@@ -93,7 +93,7 @@ func TestCheck(t *testing.T) {
 				{"terraform/modules/variables.tf", "travis.yml"},
 			},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[2]),
+				resource.NewVersion(testPullRequests[2], false),
 			},
 		},
 
@@ -104,7 +104,7 @@ func TestCheck(t *testing.T) {
 				AccessToken: "oauthtoken",
 				IgnorePaths: []string{"*.md", "*.yml"},
 			},
-			version:      resource.NewVersion(testPullRequests[3]),
+			version:      resource.NewVersion(testPullRequests[3], false),
 			pullRequests: testPullRequests,
 			files: [][]string{
 				{"README.md", "travis.yml"},
@@ -112,7 +112,7 @@ func TestCheck(t *testing.T) {
 				{"terraform/modules/variables.tf", "travis.yml"},
 			},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[2]),
+				resource.NewVersion(testPullRequests[2], false),
 			},
 		},
 
@@ -123,10 +123,10 @@ func TestCheck(t *testing.T) {
 				AccessToken:   "oauthtoken",
 				DisableCISkip: true,
 			},
-			version:      resource.NewVersion(testPullRequests[1]),
+			version:      resource.NewVersion(testPullRequests[1], false),
 			pullRequests: testPullRequests,
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[0]),
+				resource.NewVersion(testPullRequests[0], false),
 			},
 		},
 
@@ -137,10 +137,10 @@ func TestCheck(t *testing.T) {
 				AccessToken:  "oauthtoken",
 				IgnoreDrafts: true,
 			},
-			version:      resource.NewVersion(testPullRequests[3]),
+			version:      resource.NewVersion(testPullRequests[3], false),
 			pullRequests: testPullRequests,
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -151,11 +151,11 @@ func TestCheck(t *testing.T) {
 				AccessToken:  "oauthtoken",
 				IgnoreDrafts: false,
 			},
-			version:      resource.NewVersion(testPullRequests[3]),
+			version:      resource.NewVersion(testPullRequests[3], false),
 			pullRequests: testPullRequests,
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[2]),
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[2], false),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -166,12 +166,12 @@ func TestCheck(t *testing.T) {
 				AccessToken:  "oauthtoken",
 				DisableForks: true,
 			},
-			version:      resource.NewVersion(testPullRequests[5]),
+			version:      resource.NewVersion(testPullRequests[5], false),
 			pullRequests: testPullRequests,
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[3]),
-				resource.NewVersion(testPullRequests[2]),
-				resource.NewVersion(testPullRequests[1]),
+				resource.NewVersion(testPullRequests[3], false),
+				resource.NewVersion(testPullRequests[2], false),
+				resource.NewVersion(testPullRequests[1], false),
 			},
 		},
 
@@ -186,7 +186,7 @@ func TestCheck(t *testing.T) {
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[6]),
+				resource.NewVersion(testPullRequests[6], false),
 			},
 		},
 
@@ -197,10 +197,10 @@ func TestCheck(t *testing.T) {
 				AccessToken:             "oauthtoken",
 				RequiredReviewApprovals: 1,
 			},
-			version:      resource.NewVersion(testPullRequests[8]),
+			version:      resource.NewVersion(testPullRequests[8], false),
 			pullRequests: testPullRequests,
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[7]),
+				resource.NewVersion(testPullRequests[7], false),
 			},
 		},
 
@@ -215,7 +215,7 @@ func TestCheck(t *testing.T) {
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[6]),
+				resource.NewVersion(testPullRequests[6], false),
 			},
 		},
 
@@ -230,7 +230,7 @@ func TestCheck(t *testing.T) {
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[9]),
+				resource.NewVersion(testPullRequests[9], false),
 			},
 		},
 
@@ -254,12 +254,12 @@ func TestCheck(t *testing.T) {
 				AccessToken: "oauthtoken",
 				States:      []githubv4.PullRequestState{githubv4.PullRequestStateClosed, githubv4.PullRequestStateMerged},
 			},
-			version:      resource.NewVersion(testPullRequests[11]),
+			version:      resource.NewVersion(testPullRequests[11], false),
 			pullRequests: testPullRequests,
 			files:        [][]string{},
 			expected: resource.CheckResponse{
-				resource.NewVersion(testPullRequests[9]),
-				resource.NewVersion(testPullRequests[10]),
+				resource.NewVersion(testPullRequests[9], false),
+				resource.NewVersion(testPullRequests[10], false),
 			},
 		},
 	}

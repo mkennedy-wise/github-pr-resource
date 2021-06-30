@@ -27,7 +27,7 @@ type Source struct {
 	RequiredReviewApprovals int                         `json:"required_review_approvals"`
 	Labels                  []string                    `json:"labels"`
 	States                  []githubv4.PullRequestState `json:"states"`
-	NewVersionEveryUpdate   bool                        `json:"new_version_every_update"`
+	TrackNonCommitChanges   bool                        `json:"track_non_commit_changes"`
 }
 
 // Validate the source configuration.
@@ -81,27 +81,19 @@ type Version struct {
 }
 
 // NewVersion constructs a new Version.
-func NewVersion(p *PullRequest) Version {
-	return Version{
-		PR:                  strconv.Itoa(p.Number),
-		Commit:              p.Tip.OID,
-		CommittedDate:       p.UpdatedDate().Time,
-		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
-		State:               p.State,
+func NewVersion(p *PullRequest, trackNonCommitChanges bool) Version {
+	var updatedAt *time.Time
+	if trackNonCommitChanges {
+		updatedAt = &p.UpdatedAt.Time
 	}
-}
 
-// NewVersionEveryUpdate constructs a new Version that changes every time a PR is updated instead of just commits.
-// For example, will update if a label is added/removed
-// The actions that will cause an update are listed here: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#webhook-payload-object-33
-func NewVersionEveryUpdate(p *PullRequest) Version {
 	return Version{
 		PR:                  strconv.Itoa(p.Number),
 		Commit:              p.Tip.OID,
 		CommittedDate:       p.UpdatedDate().Time,
 		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
 		State:               p.State,
-		UpdatedAt:           &p.UpdatedAt.Time,
+		UpdatedAt:           updatedAt,
 	}
 }
 

@@ -159,7 +159,7 @@ func TestGet(t *testing.T) {
 			source: resource.Source{
 				Repository:            "itsdalmo/test-repository",
 				AccessToken:           "oauthtoken",
-				NewVersionEveryUpdate: true,
+				TrackNonCommitChanges: true,
 			},
 			version: resource.Version{
 				PR:                  "pr1",
