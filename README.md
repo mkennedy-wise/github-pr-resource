@@ -50,7 +50,7 @@ Notes:
 
 #### `check`
 
-By default produces new versions for all commits (after the last version) ordered by the committed date. If `track_non_commit_changes` is set to true in the source will produce new versions every time the pull request is updated, orded by the time of the updates.
+By default produces new versions for all commits (after the last version) ordered by the committed date. If `track_non_commit_changes` is set to true in the source will produce new versions every time the pull request is updated, ordered by the time of the updates.
 A version is represented as follows:
 
 - `pr`: The pull request number.
