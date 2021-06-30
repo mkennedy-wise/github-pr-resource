@@ -27,6 +27,7 @@ type Source struct {
 	RequiredReviewApprovals int                         `json:"required_review_approvals"`
 	Labels                  []string                    `json:"labels"`
 	States                  []githubv4.PullRequestState `json:"states"`
+	TrackNonCommitChanges   bool                        `json:"track_non_commit_changes"`
 }
 
 // Validate the source configuration.
@@ -73,7 +74,7 @@ type MetadataField struct {
 type Version struct {
 	PR                  string                    `json:"pr"`
 	Commit              string                    `json:"commit"`
-	CommittedDate       time.Time                 `json:"committed,omitempty"`
+	ChangeTime          time.Time                 `json:"change_time,omitempty"`
 	ApprovedReviewCount string                    `json:"approved_review_count"`
 	State               githubv4.PullRequestState `json:"state"`
 }
@@ -83,7 +84,7 @@ func NewVersion(p *PullRequest) Version {
 	return Version{
 		PR:                  strconv.Itoa(p.Number),
 		Commit:              p.Tip.OID,
-		CommittedDate:       p.UpdatedDate().Time,
+		ChangeTime:          p.ChangeTime().Time,
 		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
 		State:               p.State,
 	}
@@ -92,9 +93,10 @@ func NewVersion(p *PullRequest) Version {
 // PullRequest represents a pull request and includes the tip (commit).
 type PullRequest struct {
 	PullRequestObject
-	Tip                 CommitObject
-	ApprovedReviewCount int
-	Labels              []LabelObject
+	Tip                   CommitObject
+	ApprovedReviewCount   int
+	Labels                []LabelObject
+	TrackNonCommitChanges bool
 }
 
 // PullRequestObject represents the GraphQL commit node.
@@ -114,11 +116,20 @@ type PullRequestObject struct {
 	State             githubv4.PullRequestState
 	ClosedAt          githubv4.DateTime
 	MergedAt          githubv4.DateTime
+	UpdatedAt         githubv4.DateTime
 }
 
-// UpdatedDate returns the last time a PR was updated, either by commit
-// or being closed/merged.
-func (p *PullRequest) UpdatedDate() githubv4.DateTime {
+// ChangeTime returns the last time a PR was updated.
+// If track_non_commit_changes the time is the most recent of committed_date and updated_at.
+// Otherwise, time is either by commit or close/merge.
+func (p *PullRequest) ChangeTime() githubv4.DateTime {
+	if p.TrackNonCommitChanges {
+		if p.Tip.CommittedDate.Time.After(p.UpdatedAt.Time) {
+			return p.Tip.CommittedDate
+		}
+		return p.UpdatedAt
+	}
+
 	date := p.Tip.CommittedDate
 	switch p.State {
 	case githubv4.PullRequestStateClosed:

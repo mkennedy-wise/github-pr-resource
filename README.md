@@ -37,6 +37,7 @@ Make sure to check out [#migrating](#migrating) to learn more.
 | `labels`                    | No       | `["bug", "enhancement"]`         | The labels on the PR. The pipeline will only trigger on pull requests having at least one of the specified labels.                                                                                                                                                                         |
 | `disable_git_lfs`           | No       | `true`                           | Disable Git LFS, skipping an attempt to convert pointers of files tracked into their corresponding objects when checked out into a working copy.                                                                                                                                           |
 | `states`                    | No       | `["OPEN", "MERGED"]`             | The PR states to select (`OPEN`, `MERGED` or `CLOSED`). The pipeline will only trigger on pull requests matching one of the specified states. Default is ["OPEN"].                                                                                                                         |
+| `track_non_commit_changes`  | No       | `false`                          | Will cause a new version of the resource to be created on every pull request update. Changes that do not create new commits, such as adding a label, will trigger the pipeline.
 
 Notes:
  - If `v3_endpoint` is set, `v4_endpoint` must also be set (and the other way around).
@@ -48,15 +49,15 @@ Notes:
 
 #### `check`
 
-Produces new versions for all commits (after the last version) ordered by the committed date.
+By default produces new versions for all commits (after the last version) ordered by the committed date. If `track_non_commit_changes` is set to true in the source will produce new versions every time the pull request is updated, ordered by the time of the updates.
 A version is represented as follows:
 
 - `pr`: The pull request number.
 - `commit`: The commit SHA.
-- `committed`: Timestamp of when the commit was committed. Used to filter subsequent checks.
+- `change_time`: Timestamp of when the last change was made. Used to filter subsequent checks.
 - `approved_review_count`: The number of reviews approving of the PR.
 
-If several commits are pushed to a given PR at the same time, the last commit will be the new version.
+If several commits/updates are pushed to a given PR at the same time, the last commit/update will be the new version.
 
 **Note on webhooks:**
 This resource does not implement any caching, so it should work well with webhooks (should be subscribed to `push` and `pull_request` events).

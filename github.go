@@ -31,10 +31,11 @@ type Github interface {
 
 // GithubClient for handling requests to the Github V3 and V4 APIs.
 type GithubClient struct {
-	V3         *github.Client
-	V4         *githubv4.Client
-	Repository string
-	Owner      string
+	V3                    *github.Client
+	V4                    *githubv4.Client
+	Repository            string
+	Owner                 string
+	TrackNonCommitChanges bool
 }
 
 // NewGithubClient ...
@@ -90,10 +91,11 @@ func NewGithubClient(s *Source) (*GithubClient, error) {
 	}
 
 	return &GithubClient{
-		V3:         v3,
-		V4:         v4,
-		Owner:      owner,
-		Repository: repository,
+		V3:                    v3,
+		V4:                    v4,
+		Owner:                 owner,
+		Repository:            repository,
+		TrackNonCommitChanges: s.TrackNonCommitChanges,
 	}, nil
 }
 
@@ -156,10 +158,11 @@ func (m *GithubClient) ListPullRequests(prStates []githubv4.PullRequestState) ([
 
 			for _, c := range p.Node.Commits.Edges {
 				response = append(response, &PullRequest{
-					PullRequestObject:   p.Node.PullRequestObject,
-					Tip:                 c.Node.Commit,
-					ApprovedReviewCount: p.Node.Reviews.TotalCount,
-					Labels:              labels,
+					PullRequestObject:     p.Node.PullRequestObject,
+					Tip:                   c.Node.Commit,
+					ApprovedReviewCount:   p.Node.Reviews.TotalCount,
+					Labels:                labels,
+					TrackNonCommitChanges: m.TrackNonCommitChanges,
 				})
 			}
 		}
