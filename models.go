@@ -74,35 +74,29 @@ type MetadataField struct {
 type Version struct {
 	PR                  string                    `json:"pr"`
 	Commit              string                    `json:"commit"`
-	CommittedDate       time.Time                 `json:"committed,omitempty"`
+	ChangeTime          time.Time                 `json:"change_time,omitempty"`
 	ApprovedReviewCount string                    `json:"approved_review_count"`
 	State               githubv4.PullRequestState `json:"state"`
-	UpdatedAt           *time.Time                `json:"updated_at,omitempty"`
 }
 
 // NewVersion constructs a new Version.
-func NewVersion(p *PullRequest, trackNonCommitChanges bool) Version {
-	var updatedAt *time.Time
-	if trackNonCommitChanges {
-		updatedAt = &p.UpdatedAt.Time
-	}
-
+func NewVersion(p *PullRequest) Version {
 	return Version{
 		PR:                  strconv.Itoa(p.Number),
 		Commit:              p.Tip.OID,
-		CommittedDate:       p.UpdatedDate().Time,
+		ChangeTime:          p.ChangeTime().Time,
 		ApprovedReviewCount: strconv.Itoa(p.ApprovedReviewCount),
 		State:               p.State,
-		UpdatedAt:           updatedAt,
 	}
 }
 
 // PullRequest represents a pull request and includes the tip (commit).
 type PullRequest struct {
 	PullRequestObject
-	Tip                 CommitObject
-	ApprovedReviewCount int
-	Labels              []LabelObject
+	Tip                   CommitObject
+	ApprovedReviewCount   int
+	Labels                []LabelObject
+	TrackNonCommitChanges bool
 }
 
 // PullRequestObject represents the GraphQL commit node.
@@ -125,11 +119,12 @@ type PullRequestObject struct {
 	UpdatedAt         githubv4.DateTime
 }
 
-// UpdatedDate returns the last time a PR was updated, either by commit
-// or being closed/merged.
-func (p *PullRequest) UpdatedDate(trackNonCommitChanges bool) githubv4.DateTime {
+// ChangeTime returns the last time a PR was updated.
+// This time is either by commit/updated_at or being closed/merged.
+func (p *PullRequest) ChangeTime() githubv4.DateTime {
 	date := p.Tip.CommittedDate
-	if trackNonCommitChanges {
+
+	if p.TrackNonCommitChanges {
 		date = p.UpdatedAt
 	}
 
@@ -139,6 +134,7 @@ func (p *PullRequest) UpdatedDate(trackNonCommitChanges bool) githubv4.DateTime 
 	case githubv4.PullRequestStateMerged:
 		date = p.MergedAt
 	}
+
 	return date
 }
 

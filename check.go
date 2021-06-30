@@ -26,11 +26,6 @@ func Check(request CheckRequest, manager Github) (CheckResponse, error) {
 	}
 
 	disableSkipCI := request.Source.DisableCISkip
-	trackNonCommitChanges := request.Source.TrackNonCommitChanges
-	savedDate := request.Version.CommittedDate
-	if trackNonCommitChanges {
-		savedDate = *request.Version.UpdatedAt
-	}
 
 Loop:
 	for _, p := range pulls {
@@ -50,7 +45,7 @@ Loop:
 		}
 
 		// Filter out commits that are too old.
-		if !p.UpdatedDate(trackNonCommitChanges).Time.After(savedDate) {
+		if !p.ChangeTime().Time.After(request.Version.ChangeTime) {
 			continue
 		}
 
@@ -126,7 +121,7 @@ Loop:
 				continue Loop
 			}
 		}
-		response = append(response, NewVersion(p, trackNonCommitChanges))
+		response = append(response, NewVersion(p))
 	}
 
 	// Sort the commits by date
@@ -212,10 +207,7 @@ func (r CheckResponse) Len() int {
 }
 
 func (r CheckResponse) Less(i, j int) bool {
-	if r[j].UpdatedAt != nil && r[i].UpdatedAt != nil {
-		return r[j].UpdatedAt.After(*r[i].UpdatedAt)
-	}
-	return r[j].CommittedDate.After(r[i].CommittedDate)
+	return r[j].ChangeTime.After(r[i].ChangeTime)
 }
 
 func (r CheckResponse) Swap(i, j int) {
