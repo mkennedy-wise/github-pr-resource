@@ -54,9 +54,8 @@ A version is represented as follows:
 
 - `pr`: The pull request number.
 - `commit`: The commit SHA.
-- `committed`: Timestamp of when the commit was committed. Used to filter subsequent checks.
+- `change_time`: Timestamp of when the last change was made. Used to filter subsequent checks.
 - `approved_review_count`: The number of reviews approving of the PR.
-- `updated_at`: Only included if `track_non_commit_changes` is true in the source. Timestamp of when the pull request was last updated. Used to create new versions for non-commit updates and filter subsquent checks.
 
 If several commits/updates are pushed to a given PR at the same time, the last commit/update will be the new version.
 
