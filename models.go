@@ -127,8 +127,12 @@ type PullRequestObject struct {
 
 // UpdatedDate returns the last time a PR was updated, either by commit
 // or being closed/merged.
-func (p *PullRequest) UpdatedDate() githubv4.DateTime {
+func (p *PullRequest) UpdatedDate(trackNonCommitChanges bool) githubv4.DateTime {
 	date := p.Tip.CommittedDate
+	if trackNonCommitChanges {
+		date = p.UpdatedAt
+	}
+
 	switch p.State {
 	case githubv4.PullRequestStateClosed:
 		date = p.ClosedAt
