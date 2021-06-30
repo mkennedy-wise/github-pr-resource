@@ -38,7 +38,6 @@ Make sure to check out [#migrating](#migrating) to learn more.
 | `disable_git_lfs`           | No       | `true`                           | Disable Git LFS, skipping an attempt to convert pointers of files tracked into their corresponding objects when checked out into a working copy.                                                                                                                                           |
 | `states`                    | No       | `["OPEN", "MERGED"]`             | The PR states to select (`OPEN`, `MERGED` or `CLOSED`). The pipeline will only trigger on pull requests matching one of the specified states. Default is ["OPEN"].                                                                                                                         |
 | `track_non_commit_changes`  | No       | `false`                          | Will cause a new version of the resource to be created on every pull request update. Changes that do not create new commits, such as adding a label, will trigger the pipeline.
-                                                                                              |
 
 Notes:
  - If `v3_endpoint` is set, `v4_endpoint` must also be set (and the other way around).
